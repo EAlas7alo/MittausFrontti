@@ -9,6 +9,7 @@ const EditableCell = ({
 }) => {
   const [value, setValue] = useState(initialValue)
 
+
   const onChange = e => {
     setValue(e.target.value)
   }

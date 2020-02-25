@@ -1,51 +1,42 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import { useTable } from 'react-table'
-import Measurement from './Measurement'
-import EditableCell from './EditableCell';
+import ReactDataGrid from 'react-data-grid'
+import 'react-data-grid/dist/react-data-grid.css'
 
-const defaultColumn = {
-  
-}
+function MeasurementList({ data }) {
 
-function MeasurementList({ columns, data }) {
+  const [rows, setRows] = useState(data)
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow
-  } = useTable({
-    columns,
-    data,
-    defaultColumn
-  })
+  const columns = [
+    { key: 'id', name: 'Tunnus' },
+    { key: 'name', name: 'Mittaus', editable: true },
+    { key: 'quantity', name: 'Mittayksikkö', editable: true },
+    { key: 'referenceValueLower', name: 'Alempi viitearvo', editable: true },
+    { key: 'referenceValueUpper', name: 'Ylempi viitearvo', editable: true },
+  ]
 
+  const onGridRowsUpdated = ({ fromRow, toRow, updated}) => {
+    setRows(() => {
+      const newRows = rows.slice()
+      
+      for (let i = fromRow; i <= toRow; i++) {
+        newRows[i] = { ...rows[i], ...updated }
+      }
+
+      return newRows
+    })
+  }
+  console.log(rows)
   return (
-    <table {...getTableProps()}>
-      <thead>
-        {headerGroups.map(headerGroup => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map(column => (
-              <th {...column.getHeaderProps()}>{column.render('Header')}</th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody {...getTableBodyProps()}>
-        {rows.map((row, i) => {
-          prepareRow(row)
-          return (
-            <tr {...row.getRowProps()}>
-              {row.cells.map(cell => {
-                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-              })}
-            </tr>
-          )
-        })}
-      </tbody>
-    </table>
+    <ReactDataGrid 
+      columns={columns}
+      rowGetter={i => rows[i]}
+      rowsCount={data.length}
+      minHeight={150}
+      enableCellSelect={true}
+      onGridRowsUpdated={onGridRowsUpdated}
+
+    />
   )
 }
 

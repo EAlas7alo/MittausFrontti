@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import styled from 'styled-components'
 import MeasurementList from './components/MeasurementList';
 import EditButton from './components/EditButton';
+import AddNewForm from './components/AddNewForm';
+import msrmntService from './services/measurements'
 
 
 const Container = styled.div`
   margin-top: 2em
+  display: flex
+  flex: 1 1 auto
 `
 
 const MainHeader = styled.h2`
@@ -34,65 +38,25 @@ const measurements = [
   }
 ]
 
-
-
 function App() {
+  const [measurements, setMeasurements] = useState([])
 
-  const columns = React.useMemo(
-    () => [
-      {
-        Header: 'Mittaus',
-        columns: [
-          {
-            Header: 'Tunnus',
-            accessor: 'id',
-          },
-          {
-            Header: 'Nimi',
-            accessor: 'name',
-          },
-          {
-            Header: 'Mittayksikkö',
-            accessor: 'quantity',
-          },
-        ],
-      },
-      {
-        Header: 'Viitearvot',
-        columns: [
-          {
-            Header: 'Alaraja',
-            accessor: 'referenceValueLower'
-          },
-          {
-            Header: 'Yläraja',
-            accessor: 'referenceValueUpper',
-          },
-        ],
-      },
-      {
-        Header: () => null,
-        id: 'editButton',
-        Cell: ({ row }) => (
-          <EditButton row={row} />
-        ),
-      },
-      {
-        Header: () => null,
-        id: 'deleteButton',
-        Cell: ({ row }) => (
-          <button>Poista</button>
-        ),
-      }
-  ])
+  useEffect(() => {
+    const getMeasurements = async () => {
+      return await msrmntService.getAll()
+    }
+    setMeasurements(getMeasurements())
+  }, [])
 
+  console.log(measurements)
   return (
     <Container>
       <MainHeader>
         Mittaustietokanta
       </MainHeader>
       <AddNewButton>Lisää uusi mittaus</AddNewButton>
-      <MeasurementList columns={columns} data={measurements} />
+      <AddNewForm />
+      <MeasurementList data={measurements} />
     </Container>
   );
 }
