@@ -17,7 +17,10 @@ function AddNewForm({ handleSubmit }) {
       referenceValueLower: '', 
       referenceValueUpper: '' 
     },
-    onSubmit: handleSubmit
+    onSubmit: (data) => {
+      handleSubmit(data)
+      formik.resetForm()
+    }
   })
 
   return (
@@ -29,7 +32,7 @@ function AddNewForm({ handleSubmit }) {
           name="name"
           value={formik.values.name}
           onChange={formik.handleChange}
-          />
+        />
       </label>
       <label>
         Mittayksikkö

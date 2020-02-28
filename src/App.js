@@ -5,6 +5,7 @@ import MeasurementList from './components/MeasurementList';
 import EditButton from './components/EditButton';
 import AddNewForm from './components/AddNewForm';
 import msrmntService from './services/measurements'
+import 'bootstrap/dist/css/bootstrap.css'
 
 
 const Container = styled.div`
@@ -21,41 +22,37 @@ const AddNewButton = styled.button`
 
 `
 
-const measurements = [
-  {
-    id: 1,
-    name: "Hemoglobiini",
-    quantity: "g/l",
-    referenceValueLower: 134,
-    referenceValueUpper: 167,
-  },
-  {
-    id: 2,
-    name: "LDL-kolesteroli",
-    quantity: "mmol/l",
-    referenceValueLower: 0,
-    referenceValueUpper: 3,
-  }
-]
+
 
 function App() {
   const [measurements, setMeasurements] = useState([])
 
   useEffect(() => {
+    let measurements
     const getMeasurements = async () => {
-      return await msrmntService.getAll()
+      measurements = await msrmntService.getAll()
+      setMeasurements(measurements)
     }
-    setMeasurements(getMeasurements())
+    getMeasurements()
+    
   }, [])
 
-  console.log(measurements)
+  const handleSubmitNew = async (data) => {
+    try {
+      await msrmntService.addNew(data)
+      setMeasurements(await msrmntService.getAll())
+    } catch(e) {
+      console.log(e)
+    }
+    
+  }
+
   return (
     <Container>
       <MainHeader>
         Mittaustietokanta
       </MainHeader>
-      <AddNewButton>Lisää uusi mittaus</AddNewButton>
-      <AddNewForm />
+      <AddNewForm handleSubmit={handleSubmitNew} />
       <MeasurementList data={measurements} />
     </Container>
   );

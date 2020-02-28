@@ -12,11 +12,23 @@ const addNew = async measurement => {
 }
 
 const del = async id => {
-  console.log('do')
+  try {
+    const response = await axios.delete(`${id}`)
+
+    return response.data
+  } catch(e) {
+    console.log(e)
+  }
 }
 
 const update = async measurement => {
+  try {
+    const response = await axios.update(`${measurement.id}`, measurement)
 
+    return response.data
+  } catch(e) {
+    console.log(e)
+  }
 }
 
 const getAll = async () => {
