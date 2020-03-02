@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseUrl = 'http://localhost:3001/api/measurements'
+const baseUrl = 'http://localhost:3001/api/measurements/'
 
 const addNew = async measurement => {
   try {
@@ -13,7 +13,7 @@ const addNew = async measurement => {
 
 const del = async id => {
   try {
-    const response = await axios.delete(`${id}`)
+    const response = await axios.delete(baseUrl + id)
 
     return response.data
   } catch(e) {
@@ -23,8 +23,7 @@ const del = async id => {
 
 const update = async measurement => {
   try {
-    const response = await axios.update(`${measurement.id}`, measurement)
-
+    const response = await axios.put(baseUrl.concat(measurement.id), measurement)
     return response.data
   } catch(e) {
     console.log(e)

@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
 import styled from 'styled-components'
 import MeasurementList from './components/MeasurementList';
-import EditButton from './components/EditButton';
 import AddNewForm from './components/AddNewForm';
 import msrmntService from './services/measurements'
-import 'bootstrap/dist/css/bootstrap.css'
+import 'react-data-grid/dist/react-data-grid.css'
 
 
 const Container = styled.div`
@@ -18,14 +16,14 @@ const MainHeader = styled.h2`
 
 `
 
-const AddNewButton = styled.button`
-
+const RemoveButton = styled.button`
+  visibility: ${props => props.isVisible ? 'visible' : 'hidden'}
 `
-
-
 
 function App() {
   const [measurements, setMeasurements] = useState([])
+  const [selectedRows, setSelectedRows] = useState(new Set())
+  const [deleteButtonVisible, setDeleteButtonVisible] = useState(false)
 
   useEffect(() => {
     let measurements
@@ -34,17 +32,39 @@ function App() {
       setMeasurements(measurements)
     }
     getMeasurements()
-    
   }, [])
 
+  useEffect(() => {
+    selectedRows.size > 0 
+      ? setDeleteButtonVisible(true)
+      : setDeleteButtonVisible(false)
+  }, [selectedRows])
+
   const handleSubmitNew = async (data) => {
-    try {
-      await msrmntService.addNew(data)
-      setMeasurements(await msrmntService.getAll())
-    } catch(e) {
-      console.log(e)
+    await msrmntService.addNew(data)
+    setMeasurements(await msrmntService.getAll())
+  }
+
+  const handleDelete = async () => {
+    if (!deleteButtonVisible) return
+    /* 
+      Jokainen id on oma delete-kutsunsa, 
+      kutsut voisi tietenkin rajoittaa yhteen muulla ratkaisulla mutta
+      ottaen huomion projektin skaalan ja RESTissä pysymisen
+      olen päättänyt käyttää tätä ratkaisua.
+    */
+    for (const row of selectedRows) {
+
+      await msrmntService.del(row)
     }
-    
+    setSelectedRows(new Set())
+    setMeasurements(await msrmntService.getAll())
+  }
+
+  const handleEdit = async (measurement) => {
+    console.log(measurement)
+    await msrmntService.update(measurement)
+    setMeasurements(await msrmntService.getAll())
   }
 
   return (
@@ -53,7 +73,20 @@ function App() {
         Mittaustietokanta
       </MainHeader>
       <AddNewForm handleSubmit={handleSubmitNew} />
-      <MeasurementList data={measurements} />
+
+      <RemoveButton
+        onClick={handleDelete}
+        isVisible={deleteButtonVisible}
+        >
+          Poista valitut mittaukset
+      </RemoveButton>
+
+      <MeasurementList 
+        data={measurements}
+        selectedRows={selectedRows}
+        setSelectedRows={setSelectedRows}
+        updateRow={handleEdit}
+      />
     </Container>
   );
 }

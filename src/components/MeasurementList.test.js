@@ -22,7 +22,7 @@ const measurements = [
   }
 ]
 
-test('renders list', async () => {
+it('renders list', async () => {
     const component = render(
       <MeasurementList data={measurements} />
     )

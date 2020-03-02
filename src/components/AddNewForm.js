@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { useFormik } from 'formik'
 import styled from 'styled-components'
@@ -28,6 +28,7 @@ function AddNewForm({ handleSubmit }) {
       <label>
         Mittaus
         <input 
+          aria-label="name"
           type="text"
           name="name"
           value={formik.values.name}
@@ -36,7 +37,7 @@ function AddNewForm({ handleSubmit }) {
       </label>
       <label>
         Mittayksikkö
-        <input 
+        <input
           type="text"
           name="quantity"
           value={formik.values.quantity}
@@ -61,7 +62,7 @@ function AddNewForm({ handleSubmit }) {
           onChange={formik.handleChange}
         />
       </label>
-      <button type="submit">Tallenna</button>
+      <button type="submit">Lisää uusi mittaus</button>
     </Form>
   )
 }
