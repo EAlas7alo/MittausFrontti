@@ -38,6 +38,7 @@ function AddNewForm({ handleSubmit }) {
       <label>
         Mittayksikkö
         <input
+          aria-label="quantity"
           type="text"
           name="quantity"
           value={formik.values.quantity}
@@ -47,6 +48,7 @@ function AddNewForm({ handleSubmit }) {
       <label>
         Alempi viitearvo
         <input 
+          aria-label="referenceValueLower"
           type="text"
           name="referenceValueLower"
           value={formik.values.referenceValueLower}
@@ -56,6 +58,7 @@ function AddNewForm({ handleSubmit }) {
       <label>
         Ylempi viitearvo
         <input 
+          aria-label="referenceValueUpper"
           type="text"
           name="referenceValueUpper"
           value={formik.values.referenceValueUpper}

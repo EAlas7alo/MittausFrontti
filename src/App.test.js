@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, cleanup, waitForElement } from '@testing-library/react'
+import { render, cleanup, waitForElement, wait } from '@testing-library/react'
 
 import App from './App'
 import axiosMock from 'axios'
@@ -29,9 +29,25 @@ beforeAll(() => {
   })
 })
 
+const setup = async () => {
+  let component
+
+  await wait(() => {
+    component = render(<App />)
+  })
+
+  return {
+    ...component
+  }
+}
+
 describe('App.js', () => {
   it('renders without errors', async () => {
-    const { getByText, getByRole } = render(<App />)
+    const { getByText } = setup()
     
+  })
+
+  it('show measurement list', () => {
+
   })
 })
