@@ -1,41 +1,42 @@
 import React from 'react'
-import { render, cleanup, waitForElement, wait } from '@testing-library/react'
-
+import { render, cleanup, waitForElement, wait, act } from '@testing-library/react'
 import App from './App'
-import axiosMock from 'axios'
 
-jest.mock('axios')
+import msrmntServiceMock from './services/measurements'
 
-const measurements = [
-  {
-    id: 1,
-    name: "Hemoglobiini",
-    quantity: "g/l",
-    referenceValueLower: 134,
-    referenceValueUpper: 167,
-  },
-  {
-    id: 2,
-    name: "LDL-kolesteroli",
-    quantity: "mmol/l",
-    referenceValueLower: 0,
-    referenceValueUpper: 3,
+jest.mock('./services/measurements', () => {
+  const measurements = [
+    {
+      id: 1,
+      name: "Hemoglobiini",
+      quantity: "g/l",
+      referenceValueLower: 134,
+      referenceValueUpper: 167,
+    },
+    {
+      id: 2,
+      name: "LDL-kolesteroli",
+      quantity: "mmol/l",
+      referenceValueLower: 0,
+      referenceValueUpper: 3,
+    }
+  ]
+  return {
+    getAll: jest.fn(() => Promise.resolve(measurements))
   }
-]
-
-beforeAll(() => {
-  axiosMock.get.mockResolvedValue({
-    data: measurements
+})
+/*beforeEach(() => {
+  jest.spyOn(msrmntService, 'getAll').mockImplementation(() => {
+    return measurements
   })
 })
 
+afterEach(() => {
+  jest.clearAllMocks()
+})*/
+
 const setup = async () => {
-  let component
-
-  await wait(() => {
-    component = render(<App />)
-  })
-
+  let component = render(<App />)
   return {
     ...component
   }
@@ -43,11 +44,7 @@ const setup = async () => {
 
 describe('App.js', () => {
   it('renders without errors', async () => {
-    const { getByText } = setup()
+    const { getByText, container } = await setup()
     
-  })
-
-  it('show measurement list', () => {
-
   })
 })

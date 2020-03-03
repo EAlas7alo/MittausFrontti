@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import ReactDataGrid, { SelectColumn } from 'react-data-grid'
+import 'react-data-grid/dist/react-data-grid.css'
 
 function MeasurementList({
   data,
@@ -23,7 +24,7 @@ function MeasurementList({
   useEffect(() => {
     setRows(data)
     setSelectedRows(new Set())
-  }, [data])
+  }, [data, setRows, setSelectedRows])
 
   const onGridRowsUpdated = ({ fromRow, toRow, updated}) => {
     setRows(() => {
@@ -48,12 +49,12 @@ function MeasurementList({
       rowGetter={i => rows[i]}
       rowsCount={rows.length}
       minHeight={500}
-      enableCellSelect
+      enableCellSelect={true}
       onGridRowsUpdated={onGridRowsUpdated}
       selectedRows={selectedRows}
       onSelectedRowsChange={onSelectedRowsChange}
-      
     />
+
   )
 }
 

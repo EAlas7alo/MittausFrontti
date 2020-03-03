@@ -3,8 +3,6 @@ import styled from 'styled-components'
 import MeasurementList from './components/MeasurementList';
 import AddNewForm from './components/AddNewForm';
 import msrmntService from './services/measurements'
-import 'react-data-grid/dist/react-data-grid.css'
-
 
 const Container = styled.div`
   margin-top: 2em
