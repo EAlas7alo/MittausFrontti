@@ -1,6 +1,7 @@
 import React from 'react'
 import { render, cleanup, waitForElement, wait, act } from '@testing-library/react'
 import App from './App'
+import DataGrid, { SelectColumn } from 'react-data-grid'
 
 import msrmntServiceMock from './services/measurements'
 
@@ -22,29 +23,17 @@ jest.mock('./services/measurements', () => {
     }
   ]
   return {
-    getAll: jest.fn(() => Promise.resolve(measurements))
+    getAll: jest.fn(() => Promise.resolve({ data: measurements })),
+    addNew: jest.fn((data) => measurements.concat(data))
   }
 })
-/*beforeEach(() => {
-  jest.spyOn(msrmntService, 'getAll').mockImplementation(() => {
-    return measurements
-  })
-})
-
-afterEach(() => {
-  jest.clearAllMocks()
-})*/
-
-const setup = async () => {
-  let component = render(<App />)
-  return {
-    ...component
-  }
-}
 
 describe('App.js', () => {
   it('renders without errors', async () => {
-    const { getByText, container } = await setup()
+    const component = render(<App />)
+
+    component.rerender(<App />)
+    
     
   })
 })

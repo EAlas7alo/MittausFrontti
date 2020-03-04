@@ -44,6 +44,7 @@ function MeasurementList({
   }
 
   return (
+    <div>
     <ReactDataGrid
       columns={columns}
       rowGetter={i => rows[i]}
@@ -54,7 +55,7 @@ function MeasurementList({
       selectedRows={selectedRows}
       onSelectedRowsChange={onSelectedRowsChange}
     />
-
+    </div>
   )
 }
 

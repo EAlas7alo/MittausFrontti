@@ -3,6 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/plugin-transform-runtime": "^7.8.3",
+    "@babel/runtime": "^7.8.4",
+    "@devexpress/dx-react-core": "^2.4.1",
+    "@devexpress/dx-react-grid": "^2.4.1",
+    "@devexpress/dx-react-grid-material-ui": "^2.4.1",
+    "@material-ui/core": "^4.9.5",
     "@testing-library/user-event": "^7.1.2",
     "axios": "^0.19.2",
     "babel-plugin-transform-export-extensions": "^6.22.0",
@@ -19,8 +25,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --transformIgnorePatterns \"node_modules/(?!react-data-grid)/\" --runInBand",
-    "eject": "react-scripts eject"
+    "test": "react-scripts test --transformIgnorePatterns \"node_modules/(?!react-data-grid)/\" --runInBand --verbose",
+    "eject": "react-scripts eject",
+    "coverage": "jest --coverage --transformIgnorePatterns \"node_modules/(?!react-data-grid)/\" --runInBand"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -38,14 +45,15 @@
     ]
   },
   "devDependencies": {
-    "@babel/core": "^7.8.4",
+    "@babel/core": "^7.8.6",
+    "@babel/plugin-proposal-export-default-from": "^7.8.3",
     "@babel/plugin-transform-modules-commonjs": "^7.8.3",
     "@babel/preset-env": "^7.8.4",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.4.1",
     "babel-plugin-transform-default-import": "^1.0.0",
     "eslint": "^6.8.0",
-    "eslint-plugin-jest": "^23.8.0",
+    "eslint-plugin-jest": "^23.8.1",
     "eslint-plugin-react": "^7.18.3"
   },
   "babel": {
@@ -54,7 +62,16 @@
       "@babel/env"
     ],
     "plugins": [
-      "transform-export-extensions"
+      "transform-export-extensions",
+      "@babel/plugin-transform-modules-commonjs",
+      "@babel/plugin-proposal-export-default-from",
+      [
+        "@babel/plugin-transform-runtime",
+        {
+          "regenerator": true,
+          "useESModules": true
+        }
+      ]
     ],
     "only": [
       "./**/*.js",
