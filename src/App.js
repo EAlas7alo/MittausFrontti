@@ -39,12 +39,12 @@ function App() {
       <MainHeader>
         Mittaustietokanta
       </MainHeader>
-      <AddNewForm handleSubmit={handleSubmitNew} />
       <MeasurementGrid
         data={measurements}
         handleEdit={handleEdit}
         handleDelete={handleDelete}
         handleChanges={() => {}}
+        handleSubmitNew={handleSubmitNew}
       />
       
     </Container>

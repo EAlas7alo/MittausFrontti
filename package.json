@@ -20,14 +20,15 @@
     "react-dom": "^16.12.0",
     "react-scripts": "3.4.0",
     "react-test-renderer": "^16.13.0",
-    "styled-components": "^5.0.1"
+    "styled-components": "^5.0.1",
+    "validator": "^12.2.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --transformIgnorePatterns \"node_modules/(?!react-data-grid)/\" --runInBand --verbose",
+    "test": "react-scripts test --runInBand --verbose",
     "eject": "react-scripts eject",
-    "coverage": "jest --coverage --transformIgnorePatterns \"node_modules/(?!react-data-grid)/\" --runInBand"
+    "coverage": "jest --coverage --runInBand"
   },
   "eslintConfig": {
     "extends": "react-app"

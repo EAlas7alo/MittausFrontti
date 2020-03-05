@@ -1,7 +1,6 @@
 import React from 'react'
 import { render, cleanup, waitForElement, wait, act } from '@testing-library/react'
 import App from './App'
-import DataGrid, { SelectColumn } from 'react-data-grid'
 
 import msrmntServiceMock from './services/measurements'
 
@@ -29,11 +28,12 @@ jest.mock('./services/measurements', () => {
 })
 
 describe('App.js', () => {
-  it('renders without errors', async () => {
-    const component = render(<App />)
-
-    component.rerender(<App />)
-    
-    
+  it('renders without errors and shows initial data', async () => {
+    const { getByText, container, debug } = render(<App />)
+    await waitForElement(() => getByText('Hemoglobiini'))
+    debug()
+    expect(container).toHaveTextContent('Hemoglobiini')
   })
+
+
 })
