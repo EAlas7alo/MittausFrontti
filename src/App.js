@@ -1,8 +1,7 @@
 import React from 'react';
 import styled from 'styled-components'
-import AddNewForm from './components/AddNewForm';
 import msrmntService from './services/measurements'
-import useMeasurementsApi from './hooks./useMeasurementsApi';
+import useMeasurementsApi from './hooks/useMeasurementsApi';
 import MeasurementGrid from './components/MeasurementGrid';
 
 const Container = styled.div`

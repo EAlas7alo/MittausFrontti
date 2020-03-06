@@ -20,13 +20,14 @@ let measurements = [
   }
 ]
 
-const helperFn = {
-  handleEdit: jest.fn(),
-  handleDelete: jest.fn(),
-  handleSubmitNew: jest.fn()
-}
+
 
 const setup = () => {
+  const helperFn = {
+    handleEdit: jest.fn(),
+    handleDelete: jest.fn(),
+    handleSubmitNew: jest.fn()
+  }
   const { getByText, container, ...component} = render(
     <MeasurementGrid
       data={measurements}
@@ -45,6 +46,7 @@ const setup = () => {
     editButton,
     deleteButton,
     newButton,
+    helperFn,
     ...component,
   }
 }
@@ -65,7 +67,7 @@ describe('MeasurementGrid', () => {
 
   describe('event handlers', () => {
     it('calls editing handler on edit', () => {
-      const { editButton, container } = setup()
+      const { editButton, container, helperFn } = setup()
 
       fireEvent.click(editButton)
     
@@ -78,7 +80,7 @@ describe('MeasurementGrid', () => {
     })
 
     it('calls delete handler on delete', () => {
-      const { deleteButton } = setup()
+      const { deleteButton, helperFn } = setup()
 
       fireEvent.click(deleteButton)
 
@@ -86,13 +88,29 @@ describe('MeasurementGrid', () => {
     })
 
     it('calls submit handler on submit', () => {
-      const { newButton, container } = setup()
+      const { newButton, container, helperFn } = setup()
 
       fireEvent.click(newButton)
       const saveButton = container.querySelector('button[id="commit"]')
       fireEvent.click(saveButton)
 
       expect(helperFn.handleSubmitNew).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('validation', () => {
+    it('does not call submit on invalid input', () => {
+      const { newButton, editButton, container, helperFn } = setup()
+
+      fireEvent.click(editButton)
+
+      const refValueInput = container.querySelector('input[value="167"]')
+      fireEvent.change(refValueInput, { target: { value: 'non-numeric input' } })
+
+      fireEvent.click(newButton)
+
+      expect(helperFn.handleSubmitNew).toHaveBeenCalledTimes(0)
+
     })
   })
 

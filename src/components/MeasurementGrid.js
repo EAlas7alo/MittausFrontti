@@ -8,8 +8,20 @@ import {
   TableEditColumn
 } from '@devexpress/dx-react-grid-material-ui'
 import { EditingState } from '@devexpress/dx-react-grid';
+import EditableCell from './EditableCell';
+import { map } from 'rambda'
+import isNumber from 'validator/lib/isNumeric'
 
-
+const validate = (rows, columns) => {
+  const errors = map(row => 
+    columns.some(column => 
+      column.number 
+      && row[column.name] !== undefined 
+      && !isNumber(row[column.name])), 
+      rows);
+  return errors
+}
+  
 
 function MeasurementGrid({ 
   data,
@@ -30,6 +42,7 @@ function MeasurementGrid({
   const [editingStateColumnExtensions] = useState([
     { columnName: 'id', editingEnabled: false}
   ])
+  const [errors, setErrors] = useState({})
 
   const changeAddedRows = value => {
     const initialized = value.map(row => (Object.keys(row).length ? row : { city: 'Tokio' }));
@@ -42,6 +55,7 @@ function MeasurementGrid({
 
     if (added) {
       added.forEach(row => {
+        delete row['city']
         handleSubmitNew(row)
       })
     }
@@ -63,6 +77,13 @@ function MeasurementGrid({
     })
   }
 
+  const onEdited = 
+    edited => {
+      console.log(edited)
+      const errors = validate(edited, columns);
+      setErrors(errors)
+    }
+
   return (
     <div>
       <Grid    
@@ -78,11 +99,13 @@ function MeasurementGrid({
             addedRows={addedRows}
             onAddedRowsChange={changeAddedRows}
             columnExtensions={editingStateColumnExtensions}
+            onRowChangesChange={onEdited}
           />
         <Table />
         <TableHeaderRow />
         <TableEditRow />
           <TableEditColumn
+            cellComponent={props => <EditableCell {...props} errors={errors} />}
             showAddCommand
             showEditCommand
             showDeleteCommand
