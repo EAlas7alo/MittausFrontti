@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, waitForElement, fireEvent } from '@testing-library/react'
+import { render, waitForElement, fireEvent, act } from '@testing-library/react'
 import App from './App'
 
 import msrmntServiceMock from './services/measurements'
@@ -23,69 +23,94 @@ jest.mock('./services/measurements', () => {
   ]
   return {
     getAll: jest.fn(() => Promise.resolve({ data: measurements })),
-    addNew: jest.fn((data) => measurements.concat(data)),
-    update: jest.fn(() => {}),
+    addNew: jest.fn(),
+    update: jest.fn(),
     del: jest.fn()
   }
 })
 
-describe('App.js', () => {
-  it('renders without errors and shows initial data', async () => {
-    const { getByText, container } = render(<App />)
-    await waitForElement(() => getByText('Hemoglobiini'))
-    expect(container).toHaveTextContent('Hemoglobiini')
-  })
 
-  describe('common use cases', () => {
-    it('adding', async () => {
-      const { getByText, container } = render(<App />)
-      await waitForElement(() => getByText('Hemoglobiini'))
-      const newButton = container.querySelector('button[id="add"]')
-      fireEvent.click(newButton)
 
-      const inputs = container.querySelectorAll('input[type="text"]:not([readonly=""])')
-      console.log(inputs.length)
-
-      inputs.forEach(input => {
-        fireEvent.change(input, { target: { value: '1' } })
-      })
-
-      const submitButton = container.querySelector('button[id="commit"]')
-      fireEvent.click(submitButton)
-
-      expect(msrmntServiceMock.addNew).toHaveBeenCalledWith({
-        name: '1',
-        quantity: '1',
-        referenceValueLower: '1',
-        referenceValueUpper: '1',
-      })
-      expect(msrmntServiceMock.addNew).toHaveBeenCalledTimes(1)
-    })
-
-    it('editing', async () => {
-      const { getByText, container, debug } = render(<App />)
-      await waitForElement(() => getByText('Hemoglobiini'))
-      const editButton = container.querySelector('button[id="edit"]')
-      fireEvent.click(editButton)
-      debug()
-      const inputToChange = container.querySelector('input[value="Hemoglobiini"]')
-      fireEvent.change(inputToChange, { target: { value: 'Gemohlobiini' } })
-
-      const saveButton = container.querySelector('button[id="commit"]')
-      fireEvent.click(saveButton)
-
-      expect(msrmntServiceMock.update).toHaveBeenCalledTimes(1)
-    })
-
-    it('deleting', async () => {
-      const { getByText, container } = render(<App />)
-      await waitForElement(() => getByText('Hemoglobiini'))
-      
-      const deleteButton = container.querySelector('button[id="delete"]')
-      fireEvent.click(deleteButton)
-
-      expect(msrmntServiceMock.del).toHaveBeenCalledTimes(1)
-      expect(msrmntServiceMock.del).toHaveBeenCalledWith(1)
-    })
-  })
+const originalError = console.error
+beforeAll(() => {
+  // https://github.com/DevExpress/devextreme-reactive/issues/2709
+  console.error = (...args) => {
+    if (/Warning: Cannot update a component from inside the function body of a different component./.test(args[0])) {
+      return
+    }
+    originalError.call(console, ...args)
+  }
 })
+
+const setup = () => {
+  const utils = render(<App />)
+  return {
+    getByText: utils.getByText,
+    container: utils.container,
+    ...utils,
+  }
+}
+
+
+it('renders without errors and shows initial data', async () => {
+  const { getByText, container } = setup()
+  await waitForElement(() => getByText('Hemoglobiini'))
+  expect(container).toHaveTextContent('Hemoglobiini')
+})
+
+
+it('adding a new measurement', async () => {
+  const { getByText, container } = setup()
+  await waitForElement(() => getByText('Hemoglobiini'))
+  const newButton = container.querySelector('button[id="add"]')
+  fireEvent.click(newButton)       
+
+  const inputs = container.querySelectorAll('input[type="text"]:not([readonly=""])')
+
+  inputs.forEach(input => {
+    fireEvent.change(input, { target: { value: '1' } })
+  })
+
+  const submitButton = container.querySelector('button[id="commit"]')
+  fireEvent.click(submitButton)
+
+  expect(msrmntServiceMock.addNew).toHaveBeenCalledWith({
+    name: '1',
+    quantity: '1',
+    referenceValueLower: '1',
+    referenceValueUpper: '1',
+  })
+  expect(msrmntServiceMock.addNew).toHaveBeenCalledTimes(1)
+  
+})
+
+it('editing an existing measurement', async () => {
+  const { getByText, container } = setup()
+  await waitForElement(() => getByText('Hemoglobiini'))
+  const editButton = container.querySelector('button[id="edit"]')
+
+  fireEvent.click(editButton)
+
+  const inputToChange = container.querySelector('input[value="Hemoglobiini"]')
+
+  fireEvent.change(inputToChange, { target: { value: 'Gemohlobiini' } }) 
+
+  const submitButton = container.querySelector('button[id="commit"]')
+  fireEvent.click(submitButton)
+
+  expect(msrmntServiceMock.update).toHaveBeenCalledTimes(1)
+})
+
+it('deleting a measurement', async () => {
+  const { getByText, container } = setup()
+  await waitForElement(() => getByText('Hemoglobiini'))
+  
+  const deleteButton = container.querySelector('button[id="delete"]')
+  act(() => {
+    fireEvent.click(deleteButton)
+  })
+
+  expect(msrmntServiceMock.del).toHaveBeenCalledTimes(1)
+  expect(msrmntServiceMock.del).toHaveBeenCalledWith(1)
+})
+

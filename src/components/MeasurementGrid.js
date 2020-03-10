@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { 
   Grid,
@@ -11,17 +11,16 @@ import { EditingState } from '@devexpress/dx-react-grid';
 import EditableCell from './EditableCell';
 import { map } from 'rambda'
 import isNumber from 'validator/lib/isNumeric'
+import debounce from 'lodash.debounce'
 
-const validate = (rows, columns) => {
-  const errors = map(row => 
-    columns.some(column => 
-      column.number 
-      && row[column.name] !== undefined 
-      && !isNumber(row[column.name])), 
-      rows);
-  return errors
-}
-  
+
+const columns = [
+  { name: 'id', title: 'Tunnus' },
+  { name: 'name', title: 'Mittaus', editable: true },
+  { name: 'quantity', title: 'Mittayksikkö', editable: true },
+  { name: 'referenceValueLower', title: 'Alempi viitearvo', editable: true, number: true },
+  { name: 'referenceValueUpper', title: 'Ylempi viitearvo', editable: true, number: true },
+]
 
 function MeasurementGrid({ 
   data,
@@ -29,25 +28,18 @@ function MeasurementGrid({
   handleDelete,
   handleSubmitNew,
 }) {
-  const columns = [
-    { name: 'id', title: 'Tunnus' },
-    { name: 'name', title: 'Mittaus', editable: true },
-    { name: 'quantity', title: 'Mittayksikkö', editable: true },
-    { name: 'referenceValueLower', title: 'Alempi viitearvo', editable: true, number: true },
-    { name: 'referenceValueUpper', title: 'Ylempi viitearvo', editable: true, number: true },
-  ]
+
   const [editingRowIds, setEditingRowIds] = useState([])
   const [deletedRowIds, setDeletedRowIds] = useState([])
-  const [addedRows, setAddedRows] = useState([])
   const [editingStateColumnExtensions] = useState([
     { columnName: 'id', editingEnabled: false}
   ])
   const [errors, setErrors] = useState({})
 
-  const changeAddedRows = value => {
-    const initialized = value.map(row => (Object.keys(row).length ? row : { city: 'Tokio' }));
-    setAddedRows(initialized);
-  }
+  const validation = useCallback(debounce(edited => {
+    const errors = validate(edited, columns);
+    setErrors(errors)
+  }, 200), [])
 
   const commitChanges = ({ added, changed, deleted }) => {
     let changedRows = []
@@ -55,7 +47,6 @@ function MeasurementGrid({
 
     if (added) {
       added.forEach(row => {
-        delete row['city']
         handleSubmitNew(row)
       })
     }
@@ -65,8 +56,9 @@ function MeasurementGrid({
       })
     }
     if (deleted) {
-      const deletedSet = new Set(deleted);
-      deletable = data.filter(row => deletedSet.has(row.id-1));
+      deletable = deleted.map(row => {
+        return data[row]
+      })
     }
 
     changedRows.forEach(row => {
@@ -77,12 +69,24 @@ function MeasurementGrid({
     })
   }
 
-  const onEdited = 
-    edited => {
-      console.log(edited)
-      const errors = validate(edited, columns);
-      setErrors(errors)
-    }
+  const validate = (rows, columns) => {
+    const errors = map(row => 
+      columns.some(column => 
+        column.number 
+        && row[column.name] !== undefined 
+        && !isNumber(row[column.name])), 
+        rows)
+    
+    return errors
+  }
+
+  const changeAddedRows = value => {
+    validation(Object.assign({}, value))
+  }
+
+  const onEdited = (value) => {
+    validation(value)
+  }
 
   return (
     <div>
@@ -93,23 +97,22 @@ function MeasurementGrid({
           <EditingState
             editingRowIds={editingRowIds}
             onEditingRowIdsChange={setEditingRowIds}
+            onRowChangesChange={onEdited}
             deletedRowIds={deletedRowIds}
             onDeletedRowIdsChange={setDeletedRowIds}
             onCommitChanges={commitChanges}
-            addedRows={addedRows}
             onAddedRowsChange={changeAddedRows}
             columnExtensions={editingStateColumnExtensions}
-            onRowChangesChange={onEdited}
           />
         <Table />
         <TableHeaderRow />
         <TableEditRow />
-          <TableEditColumn
-            cellComponent={props => <EditableCell {...props} errors={errors} />}
-            showAddCommand
-            showEditCommand
-            showDeleteCommand
-          />
+        <TableEditColumn
+          cellComponent={props => <EditableCell {...props} errors={errors} />}
+          showAddCommand
+          showEditCommand
+          showDeleteCommand
+        />
       </Grid>
     </div>
   )

@@ -28,7 +28,6 @@ function App() {
   }
 
   const handleEdit = async (measurement) => {
-    
     await msrmntService.update(measurement)
     updateMeasurements()
   }
