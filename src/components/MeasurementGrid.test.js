@@ -130,7 +130,6 @@ describe('MeasurementGrid', () => {
     it('should submit after invalid input is corrected', () => {
       const { editButton, container, helperFn } = setup()
 
-
       fireEvent.click(editButton)
 
       const refValueInput = container.querySelector('input[value="167"]')
@@ -144,6 +143,12 @@ describe('MeasurementGrid', () => {
       setTimeout(() => {
         fireEvent.click(saveButton)
         expect(helperFn.handleSubmitNew).toHaveBeenCalledTimes(1)
+        expect(helperFn.handleSubmitNew).toHaveBeenCalledWith({
+            name: "Hemoglobiini",
+            quantity: "g/l",
+            referenceValueLower: 134,
+            referenceValueUpper: 167,
+        })
       }, 300)
     })
   })
