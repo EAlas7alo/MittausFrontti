@@ -29,7 +29,7 @@ describe('GET /api/measurements', () => {
     msrmntService.getAll().then(res => expect(res.data).toEqual(measurements))
     expect(axiosMock.get).toHaveBeenCalledTimes(1)
     expect(axiosMock.get).toHaveBeenCalledWith(
-      'http://localhost:3001/api/measurements/',
+      'https://mittaustyokalu.herokuapp.com/api/measurements/',
     )
   })
 })
@@ -41,7 +41,7 @@ describe('DELETE', () => {
     msrmntService.del(measurements[0].id)
     expect(axiosMock.delete).toHaveBeenCalledTimes(1)
     expect(axiosMock.delete).toHaveBeenCalledWith(
-      'http://localhost:3001/api/measurements/1',
+      'https://mittaustyokalu.herokuapp.com/api/measurements/1',
     )
   })
 })
@@ -53,7 +53,7 @@ describe('PUT', () => {
 
     expect(axiosMock.put).toHaveBeenCalledTimes(1)
     expect(axiosMock.put).toHaveBeenCalledWith(
-      'http://localhost:3001/api/measurements/1',
+      'https://mittaustyokalu.herokuapp.com/api/measurements/1',
       {
         ...measurements[0]
       }
@@ -75,7 +75,7 @@ describe('POST', () => {
 
     expect(axiosMock.post).toHaveBeenCalledTimes(1)
     expect(axiosMock.post).toHaveBeenCalledWith(
-      'http://localhost:3001/api/measurements/',
+      'https://mittaustyokalu.herokuapp.com/api/measurements/',
       {
         ...newMsrmnt
       }

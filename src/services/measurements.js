@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseUrl = 'http://localhost:3001/api/measurements/'
+const baseUrl = 'https://mittaustyokalu.herokuapp.com/api/measurements/'
 
 const addNew = async measurement => {
   try {
